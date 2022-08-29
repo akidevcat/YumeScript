@@ -1,4 +1,7 @@
-﻿using YumeScript.Exceptions;
+﻿using YumeScript.Configuration;
+using YumeScript.Exceptions;
+using YumeScript.Parser;
+using YumeScript.Script;
 using YumeScript.Tools;
 
 namespace YumeScript.Runtime;
@@ -7,6 +10,7 @@ public class RuntimeInstance
 {
     private RuntimeConfiguration _configuration;
     private readonly Dictionary<string, RuntimeScript> _scriptLibrary;
+    private readonly RuntimeThread? _thread;
 
     internal RuntimeInstance(RuntimeConfiguration configuration)
     {
@@ -28,6 +32,14 @@ public class RuntimeInstance
 
     public void ParseScripts()
     {
-        
+        foreach (var script in _scriptLibrary.Values)
+        {
+            if (script.IsParsed)
+                continue;
+            
+            RuntimeParser.ParseScript(script);
+        }
     }
+    
+    
 }

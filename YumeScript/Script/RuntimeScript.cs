@@ -1,20 +1,23 @@
-﻿using System.Collections;
-using YumeScript.Configuration;
+﻿using YumeScript.Configuration;
 using YumeScript.Exceptions;
 using YumeScript.Tools;
 
-namespace YumeScript;
+namespace YumeScript.Script;
 
 public class RuntimeScript
 {
     public string FullName { get; private set; }
-    private List<string> _sourceCode;
+    internal List<string>? SourceCode;
+    internal RuntimeFunction[]? Functions;
 
+    public bool IsParsed => Functions != null;
+    
     public RuntimeScript()
     {
         FullName = Constants.RuntimeScriptDefaultName;
-        _sourceCode = new List<string>();
     }
+
+    public RuntimeScript(string fullName, string sourceCode) : this(fullName, sourceCode.Split('\n')) { }
     
     public RuntimeScript(string fullName, IEnumerable<string> sourceCode) : this()
     {
@@ -25,6 +28,6 @@ public class RuntimeScript
         
         FullName = fullName;
         // Copy source code
-        _sourceCode = new List<string>(sourceCode);
+        SourceCode = new List<string>(sourceCode);
     }
 }

@@ -1,4 +1,5 @@
-﻿using YumeScript.Runtime;
+﻿using YumeScript.Configuration;
+using YumeScript.Runtime;
 
 namespace YumeScript.Extensions;
 

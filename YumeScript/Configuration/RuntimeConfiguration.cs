@@ -1,4 +1,6 @@
-﻿namespace YumeScript;
+﻿using YumeScript.External;
+
+namespace YumeScript.Configuration;
 
 public class RuntimeConfiguration
 {

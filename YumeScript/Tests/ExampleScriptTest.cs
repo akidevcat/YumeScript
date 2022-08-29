@@ -1,14 +1,26 @@
-﻿using YumeScript.Extensions;
+﻿using NUnit.Framework;
+using YumeScript.Configuration;
+using YumeScript.Extensions;
+using YumeScript.External;
+using YumeScript.Script;
 
 namespace YumeScript.Tests;
 
+[TestFixture]
 public class ExampleScriptTest
 {
+    [Test]
     public void Run()
     {
-        var runtime = new RuntimeConfiguration(cfg =>
+        var runtimeCfg = new RuntimeConfiguration(cfg =>
         {
             cfg.UseCallbackEngine(new DebugCallbackEngine());
-        }).CreateRuntime();
+        });
+        
+        var runtime = runtimeCfg.CreateRuntime();
+
+        runtime.AddScript(new RuntimeScript("test", File.ReadAllLines("../../../Resources/Example.yume")));
+        
+        runtime.ParseScripts();
     }
 }

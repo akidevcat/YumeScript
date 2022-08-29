@@ -1,4 +1,4 @@
-﻿namespace YumeScript;
+﻿namespace YumeScript.External;
 
 public interface IResourceManager
 {
