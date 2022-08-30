@@ -8,7 +8,7 @@ public class TokenExpectedException : Exception
     public int Position;
     
     public TokenExpectedException(string tokenName, string scriptFullName, int line, int position, Exception? innerException = null) : 
-        base($"Expected '{tokenName}' on line {line} at {position} file '{scriptFullName}'", innerException)
+        base($"Expected '{tokenName}' on line {line + 1} at {position} file '{scriptFullName}'", innerException)
     {
         TokenName = tokenName;
         ScriptFullName = scriptFullName;

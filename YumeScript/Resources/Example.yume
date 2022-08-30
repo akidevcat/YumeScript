@@ -9,7 +9,7 @@ yuu_presentation:
 		env.music("example")
 
 	# Narrative phrases 
-    * "After waiting for what felt like half an hour, a girl entered the room."
+	* "After waiting for what felt like half an hour, a girl entered the room."
 
 	# Character phrases with "prefix" or "unnamed" arguments
 	me normal "..."
@@ -46,7 +46,7 @@ yuu_presentation:
 			yuu sad hide "But..."
 			
 			# Brancing with time limitation
-			?: time=3.0
+			? time=3.0:
 				"... Only ONE chance, understand?":
 					-> yuu_talk
 					-> finale

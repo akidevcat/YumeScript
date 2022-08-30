@@ -8,7 +8,7 @@ public class RuntimeScript
 {
     public string FullName { get; private set; }
     internal List<string>? SourceCode;
-    internal RuntimeFunction[]? Functions;
+    internal Dictionary<string, RuntimeFunction>? Functions;
 
     public bool IsParsed => Functions != null;
     

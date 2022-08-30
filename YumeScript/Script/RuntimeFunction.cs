@@ -1,4 +1,7 @@
-﻿namespace YumeScript.Script;
+﻿using YumeScript.Exceptions.Parser;
+using YumeScript.Tools;
+
+namespace YumeScript.Script;
 
 public class RuntimeFunction
 {
@@ -9,6 +12,11 @@ public class RuntimeFunction
     
     public RuntimeFunction(string name, RuntimeInstruction[] instructions)
     {
+        if (!NamingHelper.IsFunctionNameValid(name))
+        {
+            throw new InvalidFunctionNameException();
+        }
+        
         Name = name;
         Instructions = (RuntimeInstruction[]) instructions.Clone();
     }

@@ -14,12 +14,15 @@ public class ExampleScriptTest
     {
         var runtimeCfg = new RuntimeConfiguration(cfg =>
         {
-            cfg.UseCallbackEngine(new DebugCallbackEngine());
+            cfg
+                .UseCallbackEngine(new DebugCallbackEngine())
+                .UseInstructionSet(InstructionSetConfiguration.UseDefaultSet)
+                .SkipUnknownInstructions();
         });
         
         var runtime = runtimeCfg.CreateRuntime();
 
-        runtime.AddScript(new RuntimeScript("test", File.ReadAllLines("../../../Resources/Example.yume")));
+        runtime.AddScript(new RuntimeScript("Example", File.ReadAllLines("../../../Resources/Example.yume")));
         
         runtime.ParseScripts();
     }
