@@ -5,7 +5,6 @@ namespace YumeScript.Configuration;
 
 public class RuntimeConfiguration
 {
-    public IResourceManager? ResourceManager { get; private set; }
     public ICallbackEngine? CallbackEngine { get; private set; }
     public InstructionSetConfiguration InstructionSetConfiguration { get; private set; } = InstructionSetConfiguration.UseDefaultSet;
     public HashSet<Type> InstructionTypes { get; private set; }
@@ -17,12 +16,6 @@ public class RuntimeConfiguration
         InstructionTypes = new HashSet<Type>();
     }
 
-    public RuntimeConfiguration UseResourceManager(IResourceManager resourceManager)
-    {
-        ResourceManager = resourceManager;
-        return this;
-    }
-    
     public RuntimeConfiguration UseCallbackEngine(ICallbackEngine callbackEngine)
     {
         CallbackEngine = callbackEngine;

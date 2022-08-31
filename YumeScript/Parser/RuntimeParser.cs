@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using YumeScript.Configuration;
 using YumeScript.Exceptions.Parser;
+using YumeScript.External;
 using YumeScript.Runtime;
 using YumeScript.Script;
 using YumeScript.Tools;
@@ -18,10 +19,10 @@ internal static class RuntimeParser
         if (script.SourceCode == null)
             return;
 
-        var resultFunctions = new Dictionary<string, RuntimeFunction>();
+        var scriptTree = new ScriptTree();
         var currentIndentionLevel = 0;
 
-        RuntimeFunctionBuilder? currentFunction = null;
+        //RuntimeFunctionBuilder? currentFunction = null;
         var parserStack = new Stack<(int, IInstructionParser)>(); // Indention level, parser
 
         for (var i = 0; i < script.SourceCode.Count; i++)
@@ -44,40 +45,44 @@ internal static class RuntimeParser
                 // Check for indention level decrease - pop stack
                 while (parserStack.Count > 0 && tabsCount <= parserStack.Peek().Item1)
                 {
-                    if (currentFunction == null)
+                    if (!scriptTree.AppendingFunction)
                     {
                         throw new NullReferenceException();
                     }
 
-                    currentFunction.AddRange(parserStack.Pop().Item2.FinalizeIndentionSection());
+                    var (flKeepParser, finalizationInstructions) = parserStack.Peek().Item2.FinalizeIndentionSection(scriptTree.Length, tokens);
+
+                    // Parser can be kept only if this is a paired instruction
+                    if (flKeepParser && !tokens[^1].EndsWith(":"))
+                    {
+                        throw new ParserException(); //ToDo
+                    }
+                    
+                    scriptTree.AppendInstructions(finalizationInstructions);
+
+                    if (!flKeepParser)
+                    {
+                        parserStack.Pop();
+                    }
                 }
                 
                 // Check for zero indention - function closure
                 if (indentionDelta < 0 && tabsCount == 0)
                 {
-                    if (currentFunction == null)
-                    {
-                        throw new NullReferenceException();
-                    }
-                    
-                    resultFunctions.Add(currentFunction.Name, currentFunction.Build());
-                    currentFunction = null;
+                    scriptTree.BuildFunction();
                 }
 
                 currentIndentionLevel = tabsCount;
 
                 // Check for function declaration
-                if (currentFunction == null)
+                if (!scriptTree.AppendingFunction)
                 {
                     var functionName = ParseFunctionDeclaration(tabsCount, tokens);
                     
                     if (functionName == null)
                         continue;
-                    
-                    if (resultFunctions.ContainsKey(functionName))
-                        throw new FunctionNameExistsException();
 
-                    currentFunction = new RuntimeFunctionBuilder(functionName);
+                    scriptTree.CreateAppendingFunction(functionName);
                     currentIndentionLevel = 1;
 
                     continue;
@@ -92,7 +97,7 @@ internal static class RuntimeParser
                 if (parserStack.Count > 0)
                 {
                     var (activeParserIndention, activeParser) = parserStack.Peek();
-                    instructionsToAppend = activeParser.InterceptLineTokens(tokens);
+                    instructionsToAppend = activeParser.InterceptLineTokens(scriptTree.Length, tokens);
 
                     if (instructionsToAppend != null)
                     {
@@ -105,9 +110,9 @@ internal static class RuntimeParser
                 {
                     foreach (var (priority, parserType) in runtime.InstructionParsers)
                     {
-                        var parser = (IInstructionParser)Activator.CreateInstance(parserType)!;
+                        var parser = (IInstructionParser)ReflectionHelper.CreateInjectedInstance(parserType, (typeof(IScriptTree), scriptTree));
                         
-                        instructionsToAppend = parser.ParseLineTokens(tokens);
+                        instructionsToAppend = parser.ParseLineTokens(scriptTree.Length, tokens);
 
                         if (instructionsToAppend != null)
                         {
@@ -132,7 +137,7 @@ internal static class RuntimeParser
                 // Add instructions to current function
                 if (instructionsToAppend != null)
                 {
-                    currentFunction.AddRange(instructionsToAppend);
+                    scriptTree.AppendInstructions(instructionsToAppend);
                 }
             }
             catch (TokenExpectedException ex)
@@ -145,13 +150,7 @@ internal static class RuntimeParser
             }
         }
 
-        if (currentFunction != null)
-        {
-            resultFunctions.Add(currentFunction.Name, currentFunction.Build());
-            currentFunction = null;
-        }
-
-        script.Functions = resultFunctions;
+        script.Functions = scriptTree.BuildTree();
     }
 
     /// <summary>
