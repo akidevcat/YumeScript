@@ -1,27 +1,26 @@
-﻿using YumeScript.Script;
+﻿using YumeScript.Parser;
+using YumeScript.Script;
 
 namespace YumeScript.Tools;
 
 public static class ParserHelper
 {
+    public static ParserResult Skip => new();
     
-    public static IEnumerable<RuntimeInstruction>? GetInstructionResult<T>(string mainData)
+    public static ParserResult Empty => new(Array.Empty<ScriptInstruction>());
+
+    public static ParserResult Result(params ScriptInstruction[] instructions)
     {
-        return new[]
-        {
-            new RuntimeInstruction(typeof(T), mainData)
-        };
-    }
-    
-    public static IEnumerable<RuntimeInstruction>? GetInstructionResult(string mainData) //ToDo Remove
-    {
-        return new[]
-        {
-            new RuntimeInstruction(null, mainData)
-        };
+        return new ParserResult(instructions);
     }
 
-    public static IEnumerable<RuntimeInstruction>? EmptyResult => Array.Empty<RuntimeInstruction>();
+    public static FinalizationParserResult Keep(params ScriptInstruction[] instructions)
+    {
+        return new FinalizationParserResult(instructions, true);
+    }
     
-    public static IEnumerable<RuntimeInstruction>? SkipResult => null;
+    public static FinalizationParserResult Discard(params ScriptInstruction[] instructions)
+    {
+        return new FinalizationParserResult(instructions);
+    }
 }

@@ -22,7 +22,7 @@ public class ExampleScriptTest
         
         var runtime = runtimeCfg.CreateRuntime();
 
-        runtime.AddScript(new RuntimeScript("Example", File.ReadAllLines("../../../Resources/Example.yume")));
+        runtime.AddScript(new Script.Script("Example", File.ReadAllLines("../../../Resources/Example.yume")));
         
         runtime.ParseScripts();
     }

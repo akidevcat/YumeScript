@@ -11,7 +11,7 @@ public class RuntimeInstance
 {
     internal readonly SortedList<int, Type> InstructionParsers;
     internal readonly Dictionary<int, IInstructionEvaluator> InstructionEvaluators;
-    internal readonly Dictionary<string, RuntimeScript> ScriptLibrary;
+    internal readonly Dictionary<string, Script.Script> ScriptLibrary;
     internal readonly RuntimeThread? Thread;
     internal bool FlSkipUnknownInstructions;
 
@@ -19,10 +19,10 @@ public class RuntimeInstance
     {
         InstructionParsers = instructionParsers;
         InstructionEvaluators = instructionEvaluators;
-        ScriptLibrary = new Dictionary<string, RuntimeScript>();
+        ScriptLibrary = new Dictionary<string, Script.Script>();
     }
 
-    public bool AddScript(RuntimeScript script) => ScriptLibrary.TryAdd(script.FullName, script);
+    public bool AddScript(Script.Script script) => ScriptLibrary.TryAdd(script.FullName, script);
 
     public bool RemoveScript(string fullName)
     {

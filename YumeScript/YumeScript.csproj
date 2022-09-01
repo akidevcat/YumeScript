@@ -14,7 +14,6 @@
     <ItemGroup>
       <Folder Include="Attributes" />
       <Folder Include="Exceptions\Runtime" />
-      <Folder Include="Runtime\InstructionEvaluators" />
     </ItemGroup>
 
 </Project>

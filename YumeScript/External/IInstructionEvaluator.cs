@@ -4,5 +4,5 @@ namespace YumeScript.External;
 
 public interface IInstructionEvaluator
 {
-    public Task Evaluate(RuntimeInstruction instruction);
+    public Task Evaluate(ScriptInstruction instruction);
 }

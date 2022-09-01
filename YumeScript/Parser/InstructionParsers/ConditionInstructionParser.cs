@@ -1,16 +1,17 @@
 ﻿using YumeScript.Exceptions.Parser;
 using YumeScript.External;
+using YumeScript.Runtime.InstructionEvaluators;
 using YumeScript.Script;
 using YumeScript.Tools;
 
 namespace YumeScript.Parser.InstructionParsers;
 
-public class ConditionInstructionParser : IInstructionParser // ToDo Rework
+public class ConditionInstructionParser : IInstructionParser
 {
-
-    private string _mainData = string.Empty;
-    private IScriptTree _scriptTree = null!;
-    private int _initialInstructionId = 0;
+    private readonly IScriptTree _scriptTree = null!;
+    private List<int> _exitJumpInstructions = new();
+    private int _lastJumpFalseInstruction = 0;
+    private string _blockToken = string.Empty;
 
     public ConditionInstructionParser() { }
     
@@ -24,12 +25,15 @@ public class ConditionInstructionParser : IInstructionParser // ToDo Rework
         return -1;
     }
 
-    public IEnumerable<RuntimeInstruction>? ParseLineTokens(int instructionId, string[] tokens)
+    public ParserResult ParseLineTokens(int instructionId, string[] tokens)
     {
         if (tokens[0] == "$if")
         {
-            _initialInstructionId = instructionId;
-            return ParserHelper.GetInstructionResult(string.Join(' ', tokens, 1, tokens.Length - 1)); // ToDo remove :
+            // Add jump_if_false into next block / end
+            _lastJumpFalseInstruction = instructionId;
+            
+            var opA = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1)); // ToDo remove :
+            return ParserHelper.Result(new ScriptInstruction(typeof(JumpIfFalseEvaluator), opA)); 
         }
 
         if (tokens[0] == "$elif")
@@ -42,38 +46,55 @@ public class ConditionInstructionParser : IInstructionParser // ToDo Rework
             throw new ParserException(); // ToDo
         }
 
-        return ParserHelper.SkipResult;
+        return ParserHelper.Skip;
     }
 
-    public IEnumerable<RuntimeInstruction>? InterceptLineTokens(int instructionId, string[] tokens)
+    public ParserResult InterceptLineTokens(int instructionId, string[] tokens)
     {
-        return ParserHelper.SkipResult;
+        return ParserHelper.Skip;
     }
 
-    public (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int instructionId, string[] tokens)
+    public FinalizationParserResult FinalizeIndentionSection(int instructionId, string[] tokens)
     {
-        // ToDo else:
-        
         if (tokens[0] == "$elif")
         {
-            // ToDo return jump instruction
-            var instruction = _scriptTree[_initialInstructionId]!.Value;
-            instruction.MainData += "\n" + string.Join(' ', tokens, 1, tokens.Length - 1);
-            _scriptTree[_initialInstructionId] = instruction;
+            // Add jump to end
+            // Add jump_if_false to next block / end
             
-            return (true, Array.Empty<RuntimeInstruction>());
+            // Allocate condition string
+            var opA = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1)); // ToDo remove :
+            _exitJumpInstructions.Add(instructionId);
+
+            // Set previous jump_if_false pointer to this jump_if_false
+            var lastJumpFalse = _scriptTree[_lastJumpFalseInstruction]!.Value;
+            lastJumpFalse.OpB = instructionId + 1;
+            _scriptTree[_lastJumpFalseInstruction] = lastJumpFalse;
+            
+            _lastJumpFalseInstruction = instructionId;
+            return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator)), new ScriptInstruction(typeof(JumpIfFalseEvaluator), opA)); // jump, jump_if_false
         }
         
-        if (tokens[0] == "$else")
+        if (tokens[0] == "$else:")
         {
-            // ToDo return jump instruction
-            var instruction = _scriptTree[_initialInstructionId]!.Value;
-            instruction.MainData += "\n" + string.Join(' ', tokens, 1, tokens.Length - 1);
-            _scriptTree[_initialInstructionId] = instruction;
+            // Add jump to end
             
-            return (true, Array.Empty<RuntimeInstruction>());
+            _exitJumpInstructions.Add(instructionId);
+            
+            // Set previous jump_if_false pointer to this block
+            var lastJumpFalse = _scriptTree[_lastJumpFalseInstruction]!.Value;
+            lastJumpFalse.OpB = instructionId + 1;
+            _scriptTree[_lastJumpFalseInstruction] = lastJumpFalse;
+            
+            return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator))); // jump
         }
 
-        return (false, Array.Empty<RuntimeInstruction>());
+        foreach (var i in _exitJumpInstructions)
+        {
+            var temp = _scriptTree[i]!.Value;
+            temp.OpB = instructionId;
+            _scriptTree[i] = temp;
+        }
+
+        return ParserHelper.Discard(new ScriptInstruction(typeof(PointerEvaluator))); // Block (Frame) exit instruction - just as a pointer
     }
 }

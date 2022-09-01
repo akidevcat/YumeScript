@@ -1,31 +1,27 @@
 ﻿using YumeScript.Script;
+using YumeScript.Tools;
 
 namespace YumeScript.Parser.InstructionParsers;
 
 public class FooInstructionParser : IInstructionParser
 {
-    public FooInstructionParser()
-    {
-        
-    }
-    
     public int GetPriority()
     {
         return 100;
     }
 
-    public IEnumerable<RuntimeInstruction>? ParseLineTokens(int lineId, string[] tokens)
+    public ParserResult ParseLineTokens(int instructionId, string[] tokens)
     {
-        return Array.Empty<RuntimeInstruction>();
+        return ParserHelper.Empty;
     }
 
-    public IEnumerable<RuntimeInstruction>? InterceptLineTokens(int lineId, string[] tokens)
+    public ParserResult InterceptLineTokens(int instructionId, string[] tokens)
     {
-        return Array.Empty<RuntimeInstruction>();
+        return ParserHelper.Empty;
     }
 
-    public (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int lineId, string[] tokens)
+    public FinalizationParserResult FinalizeIndentionSection(int instructionId, string[] tokens)
     {
-        return (false, Array.Empty<RuntimeInstruction>());
+        return ParserHelper.Discard();
     }
 }

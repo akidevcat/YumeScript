@@ -1,4 +1,5 @@
-﻿using YumeScript.Exceptions.Parser;
+﻿using System.Collections.Immutable;
+using YumeScript.Exceptions.Parser;
 using YumeScript.External;
 using YumeScript.Script;
 
@@ -6,11 +7,12 @@ namespace YumeScript.Parser;
 
 public class ScriptTree : IScriptTree
 {
-    private RuntimeFunctionBuilder? _appendingFunction;
-    private readonly List<RuntimeFunction> _functions;
+    private ScriptFunctionBuilder? _appendingFunction;
+    private readonly List<ScriptFunction> _functions;
     private readonly HashSet<string> _functionNames;
+    private readonly Dictionary<int, IConvertible> _constants;
     
-    public RuntimeInstruction? this[int lineId]
+    public ScriptInstruction? this[int lineId]
     {
         get
         {
@@ -77,6 +79,7 @@ public class ScriptTree : IScriptTree
             if (lineId < funcPtr + _appendingFunction.Count)
             {
                 _appendingFunction[lineId - funcPtr] = value.Value;
+                return;
             }
 
             throw new IndexOutOfRangeException();
@@ -97,18 +100,19 @@ public class ScriptTree : IScriptTree
     
     internal ScriptTree()
     {
-        _functions = new List<RuntimeFunction>();
-        _functionNames = new HashSet<string>();
+        _functions = new ();
+        _functionNames = new();
+        _constants = new();
     }
 
     internal bool AppendingFunction => _appendingFunction != null;
-    
+
     internal void CreateAppendingFunction(string name)
     {
         if (ContainsFunction(name))
             throw new FunctionNameExistsException();
 
-        _appendingFunction = new RuntimeFunctionBuilder(name);
+        _appendingFunction = new ScriptFunctionBuilder(name);
         _functionNames.Add(name);
     }
     
@@ -136,7 +140,7 @@ public class ScriptTree : IScriptTree
 
     internal bool ContainsFunction(string name) => _functionNames.Contains(name);
 
-    internal void AppendInstructions(IEnumerable<RuntimeInstruction> instructions)
+    internal void AppendInstructions(IEnumerable<ScriptInstruction> instructions)
     {
         if (_appendingFunction == null)
         {
@@ -145,10 +149,23 @@ public class ScriptTree : IScriptTree
 
         _appendingFunction.AddRange(instructions);
     }
+    
+    public int Allocate(IConvertible constant)
+    {
+        var hash = constant.GetHashCode();
+        if (!_constants.ContainsKey(hash))
+            _constants.Add(hash, constant);
+        return hash;
+    }
 
-    internal Dictionary<string, RuntimeFunction> BuildTree()
+    internal ImmutableDictionary<string, ScriptFunction> BuildTree()
     {
         TryBuildFunction();
-        return _functions.ToDictionary(x => x.Name);
+        return _functions.ToImmutableDictionary(x => x.Name);
+    }
+    
+    internal ImmutableDictionary<int, IConvertible> BuildConstants()
+    {
+        return _constants.ToImmutableDictionary();
     }
 }

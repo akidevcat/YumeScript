@@ -1,5 +1,6 @@
 ﻿using YumeScript.Exceptions.InstructionParsers;
 using YumeScript.Exceptions.Parser;
+using YumeScript.External;
 using YumeScript.Script;
 using YumeScript.Tools;
 
@@ -7,12 +8,22 @@ namespace YumeScript.Parser.InstructionParsers;
 
 public class FunctionCallInstructionParser : IInstructionParser
 {
+    
+    private readonly IScriptTree _scriptTree = null!;
+    
+    public FunctionCallInstructionParser() { }
+    
+    public FunctionCallInstructionParser(IScriptTree scriptTree)
+    {
+        _scriptTree = scriptTree;
+    }
+    
     public int GetPriority()
     {
         return 1;
     }
 
-    public IEnumerable<RuntimeInstruction>? ParseLineTokens(int lineId, string[] tokens)
+    public ParserResult ParseLineTokens(int lineId, string[] tokens)
     {
         if (tokens[0] == "->")
         {
@@ -22,22 +33,20 @@ public class FunctionCallInstructionParser : IInstructionParser
             {
                 throw new InvalidFunctionCallName();
             }
-            
-            return new[]
-            {
-                new RuntimeInstruction(null, tokens[1])
-            };
+
+            var op = _scriptTree.Allocate(tokens[1]);
+            return ParserHelper.Result(new ScriptInstruction(null, op));
         }
 
-        return null;
+        return ParserHelper.Skip;
     }
 
-    public IEnumerable<RuntimeInstruction>? InterceptLineTokens(int lineId, string[] tokens)
+    public ParserResult InterceptLineTokens(int lineId, string[] tokens)
     {
         throw new ParserException();
     }
 
-    public (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int lineId, string[] tokens)
+    public FinalizationParserResult FinalizeIndentionSection(int lineId, string[] tokens)
     {
         throw new ParserException();
     }

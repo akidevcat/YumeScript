@@ -1,5 +1,6 @@
 ﻿using YumeScript.Parser;
 using YumeScript.Script;
+using YumeScript.Tools;
 
 namespace YumeScript.Exceptions.Parser;
 
@@ -10,7 +11,7 @@ public class FunctionReturnInstructionParser : IInstructionParser
         return 2;
     }
 
-    public IEnumerable<RuntimeInstruction>? ParseLineTokens(int lineId, string[] tokens)
+    public ParserResult ParseLineTokens(int lineId, string[] tokens)
     {
         if (tokens[0] == "<-")
         {
@@ -18,22 +19,19 @@ public class FunctionReturnInstructionParser : IInstructionParser
             {
                 throw new ParserException(); //ToDo Change exception
             }
-            
-            return new[]
-            {
-                new RuntimeInstruction(null, string.Empty)
-            };
+
+            return ParserHelper.Result(new ScriptInstruction(null));
         }
 
-        return null;
+        return ParserHelper.Skip;
     }
 
-    public IEnumerable<RuntimeInstruction>? InterceptLineTokens(int lineId, string[] tokens)
+    public ParserResult InterceptLineTokens(int lineId, string[] tokens)
     {
         throw new ParserException();
     }
 
-    public (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int lineId, string[] tokens)
+    public FinalizationParserResult FinalizeIndentionSection(int lineId, string[] tokens)
     {
         throw new ParserException();
     }

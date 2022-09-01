@@ -94,7 +94,7 @@ public static class RuntimeConfigurationExtensions
 
     private static Assembly GetEvaluatorsAssembly() => typeof(RuntimeInstance).Assembly;
     
-    private static Assembly GetParsersAssembly() => typeof(RuntimeParser).Assembly;
+    private static Assembly GetParsersAssembly() => typeof(ScriptParser).Assembly;
 
     private static IEnumerable<Assembly> GetExternalAssemblies() =>
         AppDomain.CurrentDomain.GetAssemblies()

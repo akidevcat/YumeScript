@@ -1,4 +1,5 @@
-﻿using YumeScript.Script;
+﻿using YumeScript.External;
+using YumeScript.Script;
 using YumeScript.Tools;
 
 namespace YumeScript.Parser.InstructionParsers;
@@ -6,40 +7,49 @@ namespace YumeScript.Parser.InstructionParsers;
 public class CodeInstructionParser : IInstructionParser
 {
 
-    private string _scriptCode = "";
+    private string _appendingConstant = string.Empty;
+    
+    private readonly IScriptTree _scriptTree = null!;
 
+    public CodeInstructionParser() { }
+
+    public CodeInstructionParser(IScriptTree scriptTree)
+    {
+        _scriptTree = scriptTree;
+    }
+    
     public int GetPriority()
     {
         return 0;
     }
 
-    public IEnumerable<RuntimeInstruction>? ParseLineTokens(int lineId, string[] tokens)
+    public ParserResult ParseLineTokens(int lineId, string[] tokens)
     {
         if (tokens[0] == "$")
         {
-            return ParserHelper.GetInstructionResult(string.Join(' ', tokens, 1, tokens.Length - 1));
+            var op = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1));
+            return ParserHelper.Result(new ScriptInstruction(null, op));
         }
 
         if (tokens[0] == "$:")
         {
-            return ParserHelper.EmptyResult;
+            return ParserHelper.Empty;
         }
-
-        return null;
-    }
-
-    public IEnumerable<RuntimeInstruction>? InterceptLineTokens(int lineId, string[] tokens)
-    {
-        _scriptCode += string.Join(' ', tokens) + "\n";
         
-        return ParserHelper.EmptyResult;
+        return ParserHelper.Skip;
     }
 
-    public (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int lineId, string[] tokens)
+    public ParserResult InterceptLineTokens(int lineId, string[] tokens)
     {
-        return (false, new[]
-        {
-            new RuntimeInstruction(null, _scriptCode)
-        });
+        _appendingConstant += string.Join(' ', tokens) + "\n";
+        
+        return ParserHelper.Empty;
+    }
+
+    public FinalizationParserResult FinalizeIndentionSection(int lineId, string[] tokens)
+    {
+        var op = _scriptTree.Allocate(_appendingConstant);
+
+        return ParserHelper.Discard(new ScriptInstruction(null, op));
     }
 }

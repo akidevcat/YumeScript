@@ -2,7 +2,7 @@
 
 namespace YumeScript.Parser;
 
-public interface IInstructionParser
+public interface IInstructionParser // ToDo Property injection instead of constructor injection
 {
     /// <summary>
     /// Returns parser's priority.
@@ -16,7 +16,7 @@ public interface IInstructionParser
     /// </summary>
     /// <param name="tokens">Line tokens</param>
     /// <returns>An instruction if successful, else null</returns>
-    IEnumerable<RuntimeInstruction>? ParseLineTokens(int instructionId, string[] tokens);
+    ParserResult ParseLineTokens(int instructionId, string[] tokens);
 
     /// <summary>
     /// Intercepts normal line parsing workflow after indention calculation.
@@ -26,7 +26,7 @@ public interface IInstructionParser
     /// State, whether the parsing workflow should continue or not, and an instruction
     /// that should be added to the resulted script.
     /// </returns>
-    IEnumerable<RuntimeInstruction>? InterceptLineTokens(int instructionId, string[] tokens);
+    ParserResult InterceptLineTokens(int instructionId, string[] tokens);
 
     /// <summary>
     /// Finalizes (before dereferencing and being removed) indention section.
@@ -35,5 +35,5 @@ public interface IInstructionParser
     /// bool - whether this parser should be kept for the following indention section
     /// 
     /// </returns>
-    (bool, IEnumerable<RuntimeInstruction>) FinalizeIndentionSection(int instructionId, string[] tokens);
+    FinalizationParserResult FinalizeIndentionSection(int instructionId, string[] tokens);
 }

@@ -4,11 +4,11 @@ using YumeScript.Tools;
 
 namespace YumeScript.Parser;
 
-public class RuntimeFunctionBuilder : List<RuntimeInstruction>
+public class ScriptFunctionBuilder : List<ScriptInstruction>
 {
     public readonly string Name;
     
-    public RuntimeFunctionBuilder(string name)
+    public ScriptFunctionBuilder(string name)
     {
         if (!NamingHelper.IsFunctionNameValid(name))
         {
@@ -18,9 +18,9 @@ public class RuntimeFunctionBuilder : List<RuntimeInstruction>
         Name = name;
     }
 
-    public RuntimeFunction Build()
+    public ScriptFunction Build()
     {
-        var result = new RuntimeFunction(Name)
+        var result = new ScriptFunction(Name)
         {
             Instructions = ToArray()
         };

@@ -9,7 +9,7 @@ public class RuntimeParser_ParseTokens
     [Test]
     public void Run()
     {
-        var result = RuntimeParser.ParseTokens(
+        var result = ScriptParser.ParseTokens(
             "\t\t\t\t* \"After waiting for what felt like half an hour, a girl entered the room.\" # Test Comment");
         
         Assert.AreEqual(4, result.Item1);

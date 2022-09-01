@@ -9,9 +9,9 @@ using YumeScript.Tools;
 
 namespace YumeScript.Parser;
 
-internal static class RuntimeParser
+internal static class ScriptParser
 {
-    internal static void ParseScript(this RuntimeInstance runtime, RuntimeScript script)
+    internal static void ParseScript(this RuntimeInstance runtime, Script.Script script)
     {
         if (script.IsParsed)
             return;
@@ -50,19 +50,28 @@ internal static class RuntimeParser
                         throw new NullReferenceException();
                     }
 
-                    var (flKeepParser, finalizationInstructions) = parserStack.Peek().Item2.FinalizeIndentionSection(scriptTree.Length, tokens);
+                    var parserResult = parserStack.Peek().Item2.FinalizeIndentionSection(scriptTree.Length, tokens);
+
+                    if (parserResult.Instructions == null)
+                    {
+                        throw new NullReferenceException(); // ToDo
+                    }
 
                     // Parser can be kept only if this is a paired instruction
-                    if (flKeepParser && !tokens[^1].EndsWith(":"))
+                    if (parserResult.KeepParser && !tokens[^1].EndsWith(":"))
                     {
                         throw new ParserException(); //ToDo
                     }
                     
-                    scriptTree.AppendInstructions(finalizationInstructions);
+                    scriptTree.AppendInstructions(parserResult.Instructions);
 
-                    if (!flKeepParser)
+                    if (!parserResult.KeepParser || tabsCount != parserStack.Peek().Item1)
                     {
                         parserStack.Pop();
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
                 
@@ -90,14 +99,14 @@ internal static class RuntimeParser
                 
                 // --- currentFunction is not null ---
 
-                IEnumerable<RuntimeInstruction>? instructionsToAppend = null;
+                IEnumerable<ScriptInstruction>? instructionsToAppend = null;
                 IInstructionParser? currentParser = null;
 
                 // Send current line to active parser interception
                 if (parserStack.Count > 0)
                 {
                     var (activeParserIndention, activeParser) = parserStack.Peek();
-                    instructionsToAppend = activeParser.InterceptLineTokens(scriptTree.Length, tokens);
+                    instructionsToAppend = activeParser.InterceptLineTokens(scriptTree.Length, tokens).Instructions;
 
                     if (instructionsToAppend != null)
                     {
@@ -110,9 +119,10 @@ internal static class RuntimeParser
                 {
                     foreach (var (priority, parserType) in runtime.InstructionParsers)
                     {
-                        var parser = (IInstructionParser)ReflectionHelper.CreateInjectedInstance(parserType, (typeof(IScriptTree), scriptTree));
+                        var parser = (IInstructionParser)ReflectionHelper
+                            .CreateInjectedInstance(parserType, (typeof(IScriptTree), scriptTree));
                         
-                        instructionsToAppend = parser.ParseLineTokens(scriptTree.Length, tokens);
+                        instructionsToAppend = parser.ParseLineTokens(scriptTree.Length, tokens).Instructions;
 
                         if (instructionsToAppend != null)
                         {
@@ -151,6 +161,7 @@ internal static class RuntimeParser
         }
 
         script.Functions = scriptTree.BuildTree();
+        script.OpConstants = scriptTree.BuildConstants();
     }
 
     /// <summary>
@@ -192,7 +203,7 @@ internal static class RuntimeParser
         return name;
     }
     
-    internal static RuntimeInstruction? ParseInstruction(string[] tokens)
+    internal static ScriptInstruction? ParseInstruction(string[] tokens)
     {
         if (tokens.Length == 0)
             return null;
