@@ -1,4 +1,5 @@
 ﻿using YumeScript.External;
+using YumeScript.Runtime.InstructionEvaluators;
 using YumeScript.Script;
 using YumeScript.Tools;
 
@@ -28,7 +29,7 @@ public class CodeInstructionParser : IInstructionParser
         if (tokens[0] == "$")
         {
             var op = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1));
-            return ParserHelper.Result(new ScriptInstruction(null, op));
+            return ParserHelper.Result(new ScriptInstruction(typeof(CodeEvaluator), op));
         }
 
         if (tokens[0] == "$:")
@@ -50,6 +51,6 @@ public class CodeInstructionParser : IInstructionParser
     {
         var op = _scriptTree.Allocate(_appendingConstant);
 
-        return ParserHelper.Discard(new ScriptInstruction(null, op));
+        return ParserHelper.Discard(new ScriptInstruction(typeof(CodeEvaluator), op));
     }
 }

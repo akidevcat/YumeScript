@@ -1,6 +1,12 @@
-﻿namespace YumeScript.Runtime.InstructionEvaluators;
+﻿using YumeScript.External;
+using YumeScript.Script;
 
-public class CodeEvaluator
+namespace YumeScript.Runtime.InstructionEvaluators;
+
+public class CodeEvaluator : IInstructionEvaluator
 {
-    
+    public Task Evaluate(ScriptInstruction instruction)
+    {
+        throw new NotImplementedException();
+    }
 }

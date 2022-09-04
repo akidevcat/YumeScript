@@ -36,23 +36,6 @@ public static class RuntimeConfigurationExtensions
                 break;
         }
 
-        // ToDo Rework
-        // Add evaluator and parser instances from configuration types
-        // var cfgInstances = ReflectionHelper.CreateTypesInstances(configuration.InstructionTypes);
-        //
-        // foreach (var x in cfgInstances)
-        // {
-        //     switch (x)
-        //     {
-        //         case IInstructionEvaluator e:
-        //             evaluators.Add(NamingHelper.GetObjectTypeHashcode(e), e);
-        //             break;
-        //         case IInstructionParser p:
-        //             parsers.Add(p.GetPriority(), p);
-        //             break;
-        //     }
-        // }
-
         return new RuntimeInstance(parsers, evaluators)
         {
             FlSkipUnknownInstructions = configuration.FlSkipUnknownInstructions
@@ -66,7 +49,7 @@ public static class RuntimeConfigurationExtensions
 
         foreach (var e in ReflectionHelper.CreateTypesInstances<IInstructionEvaluator>(defaultEvaluatorTypes))
         {
-            evaluators.Add(NamingHelper.GetObjectTypeHashcode(e), e);
+            evaluators.Add(e.GetType().GetHashCode(), e);
         }
 
         foreach (var p in ReflectionHelper.CreateTypesInstances<IInstructionParser>(defaultParserTypes))
@@ -83,7 +66,7 @@ public static class RuntimeConfigurationExtensions
 
         foreach (var e in ReflectionHelper.CreateTypesInstances<IInstructionEvaluator>(extendedEvaluatorTypes))
         {
-            evaluators.Add(NamingHelper.GetObjectTypeHashcode(e), e);
+            evaluators.Add(e.GetType().GetHashCode(), e);
         }
                 
         foreach (var p in ReflectionHelper.CreateTypesInstances<IInstructionParser>(extendedParserTypes))

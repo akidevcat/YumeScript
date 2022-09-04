@@ -7,8 +7,9 @@ namespace YumeScript.Parser;
 public class ScriptFunctionBuilder : List<ScriptInstruction>
 {
     public readonly string Name;
+    public readonly int Pointer;
     
-    public ScriptFunctionBuilder(string name)
+    public ScriptFunctionBuilder(string name, int pointer)
     {
         if (!NamingHelper.IsFunctionNameValid(name))
         {
@@ -16,11 +17,12 @@ public class ScriptFunctionBuilder : List<ScriptInstruction>
         }
 
         Name = name;
+        Pointer = pointer;
     }
 
     public ScriptFunction Build()
     {
-        var result = new ScriptFunction(Name)
+        var result = new ScriptFunction(Name, Pointer)
         {
             Instructions = ToArray()
         };

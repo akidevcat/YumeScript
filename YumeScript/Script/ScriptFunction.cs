@@ -5,12 +5,13 @@ namespace YumeScript.Script;
 
 public class ScriptFunction
 {
-    public string Name;
+    public readonly string Name;
+    public readonly int Pointer;
     internal ScriptInstruction[] Instructions;
 
-    public ScriptFunction(string name) : this(name, Array.Empty<ScriptInstruction>()) { }
+    public ScriptFunction(string name, int pointer) : this(name, pointer, Array.Empty<ScriptInstruction>()) { }
     
-    public ScriptFunction(string name, ScriptInstruction[] instructions)
+    public ScriptFunction(string name, int pointer, ScriptInstruction[] instructions)
     {
         if (!NamingHelper.IsFunctionNameValid(name))
         {
@@ -18,6 +19,7 @@ public class ScriptFunction
         }
         
         Name = name;
+        Pointer = pointer;
         Instructions = (ScriptInstruction[]) instructions.Clone();
     }
 }

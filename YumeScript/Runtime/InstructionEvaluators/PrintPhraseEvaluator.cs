@@ -1,6 +1,12 @@
-﻿namespace YumeScript.Runtime.InstructionEvaluators;
+﻿using YumeScript.External;
+using YumeScript.Script;
 
-public class PrintPhraseEvaluator
+namespace YumeScript.Runtime.InstructionEvaluators;
+
+public class PrintPhraseEvaluator : IInstructionEvaluator
 {
-    
+    public Task Evaluate(ScriptInstruction instruction)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using YumeScript.Exceptions.Parser;
 using YumeScript.External;
+using YumeScript.Runtime.InstructionEvaluators;
 using YumeScript.Script;
 
 namespace YumeScript.Parser;
@@ -12,7 +13,7 @@ public class ScriptTree : IScriptTree
     private readonly HashSet<string> _functionNames;
     private readonly Dictionary<int, IConvertible> _constants;
     
-    public ScriptInstruction? this[int lineId]
+    public ScriptInstruction? this[int lineId] // ToDo
     {
         get
         {
@@ -97,12 +98,17 @@ public class ScriptTree : IScriptTree
             return result;
         }
     }
-    
+
     internal ScriptTree()
     {
         _functions = new ();
         _functionNames = new();
         _constants = new();
+        
+        _constants.Add(int.MaxValue, "Registry Value A");
+        _constants.Add(int.MaxValue - 1, "Registry Value B");
+        _constants.Add(int.MaxValue - 2, "Registry Value C");
+        _constants.Add(int.MaxValue - 3, "Registry Value D");
     }
 
     internal bool AppendingFunction => _appendingFunction != null;
@@ -112,7 +118,10 @@ public class ScriptTree : IScriptTree
         if (ContainsFunction(name))
             throw new FunctionNameExistsException();
 
-        _appendingFunction = new ScriptFunctionBuilder(name);
+        if (_appendingFunction != null)
+            throw new Exception("Appending function already exists"); // ToDo
+        
+        _appendingFunction = new ScriptFunctionBuilder(name, Length);
         _functionNames.Add(name);
     }
     
@@ -134,6 +143,7 @@ public class ScriptTree : IScriptTree
             throw new NullReferenceException(); // ToDo
         }
         
+        _appendingFunction.Add(new ScriptInstruction(typeof(ReturnEvaluator))); // ToDo change to external call
         _functions.Add(_appendingFunction.Build());
         _appendingFunction = null;
     }

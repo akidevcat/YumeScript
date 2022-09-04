@@ -41,6 +41,8 @@ internal static class ScriptParser
                 // Check for incorrect indention increase
                 if (indentionDelta > 0)
                     throw new IndentionException(currentIndentionLevel, tabsCount, script.FullName, i);
+
+                var flSkipFurtherParsing = false;
                 
                 // Check for indention level decrease - pop stack
                 while (parserStack.Count > 0 && tabsCount <= parserStack.Peek().Item1)
@@ -71,9 +73,13 @@ internal static class ScriptParser
                     }
                     else
                     {
+                        flSkipFurtherParsing = true;
                         break;
                     }
                 }
+                
+                if (flSkipFurtherParsing)
+                    continue;
                 
                 // Check for zero indention - function closure
                 if (indentionDelta < 0 && tabsCount == 0)
@@ -158,6 +164,24 @@ internal static class ScriptParser
             {
                 throw new IndentionException(ex.ExpectedIndention, ex.ActualIndention, script.FullName, i, ex);
             }
+        }
+        
+        // Clear remaining stack
+        while (parserStack.TryPop(out var parserFrame))
+        {
+            if (!scriptTree.AppendingFunction)
+            {
+                throw new NullReferenceException();
+            }
+            
+            var parserResult = parserFrame.Item2.FinalizeIndentionSection(scriptTree.Length, Array.Empty<string>());
+            
+            if (parserResult.Instructions == null)
+            {
+                throw new NullReferenceException(); // ToDo
+            }
+            
+            scriptTree.AppendInstructions(parserResult.Instructions);
         }
 
         script.Functions = scriptTree.BuildTree();

@@ -5,6 +5,7 @@ namespace YumeScript.Tools;
 
 public static class ParserHelper
 {
+    
     public static ParserResult Skip => new();
     
     public static ParserResult Empty => new(Array.Empty<ScriptInstruction>());

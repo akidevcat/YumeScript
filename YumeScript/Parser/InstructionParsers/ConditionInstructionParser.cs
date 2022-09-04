@@ -9,9 +9,8 @@ namespace YumeScript.Parser.InstructionParsers;
 public class ConditionInstructionParser : IInstructionParser
 {
     private readonly IScriptTree _scriptTree = null!;
-    private List<int> _exitJumpInstructions = new();
-    private int _lastJumpFalseInstruction = 0;
-    private string _blockToken = string.Empty;
+    private readonly List<int> _exitJumpInstructions = new();
+    private int _lastJumpFalseInstruction;
 
     public ConditionInstructionParser() { }
     
@@ -56,7 +55,7 @@ public class ConditionInstructionParser : IInstructionParser
 
     public FinalizationParserResult FinalizeIndentionSection(int instructionId, string[] tokens)
     {
-        if (tokens[0] == "$elif")
+        if (tokens.Length > 0 && tokens[0] == "$elif")
         {
             // Add jump to end
             // Add jump_if_false to next block / end
@@ -74,7 +73,7 @@ public class ConditionInstructionParser : IInstructionParser
             return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator)), new ScriptInstruction(typeof(JumpIfFalseEvaluator), opA)); // jump, jump_if_false
         }
         
-        if (tokens[0] == "$else:")
+        if (tokens.Length > 0 && tokens[0] == "$else:")
         {
             // Add jump to end
             
@@ -93,6 +92,12 @@ public class ConditionInstructionParser : IInstructionParser
             var temp = _scriptTree[i]!.Value;
             temp.OpB = instructionId;
             _scriptTree[i] = temp;
+        }
+        
+        // If function end - do not additional pointer instruction
+        if (tokens.Length == 0)
+        {
+            return ParserHelper.Discard();
         }
 
         return ParserHelper.Discard(new ScriptInstruction(typeof(PointerEvaluator))); // Block (Frame) exit instruction - just as a pointer

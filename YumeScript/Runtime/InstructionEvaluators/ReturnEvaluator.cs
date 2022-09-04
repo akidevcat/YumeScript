@@ -1,6 +1,12 @@
-﻿namespace YumeScript.Runtime.InstructionEvaluators;
+﻿using YumeScript.External;
+using YumeScript.Script;
 
-public class ReturnEvaluator
+namespace YumeScript.Runtime.InstructionEvaluators;
+
+public class ReturnEvaluator : IInstructionEvaluator
 {
-    
+    public Task Evaluate(ScriptInstruction instruction)
+    {
+        throw new NotImplementedException();
+    }
 }

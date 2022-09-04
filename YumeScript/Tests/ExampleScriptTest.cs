@@ -3,6 +3,7 @@ using YumeScript.Configuration;
 using YumeScript.Extensions;
 using YumeScript.External;
 using YumeScript.Script;
+using YumeScript.Tools;
 
 namespace YumeScript.Tests;
 
@@ -22,8 +23,10 @@ public class ExampleScriptTest
         
         var runtime = runtimeCfg.CreateRuntime();
 
-        runtime.AddScript(new Script.Script("Example", File.ReadAllLines("../../../Resources/Example.yume")));
-        
+        var script = new Script.Script("Example", File.ReadAllLines("../../../Resources/Example.yume"));
+        runtime.AddScript(script);
         runtime.ParseScripts();
+        
+        DebugHelper.PrintScriptInstructions(runtime, script);
     }
 }

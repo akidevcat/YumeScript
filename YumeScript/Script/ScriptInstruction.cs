@@ -18,7 +18,7 @@ public struct ScriptInstruction
             throw new ArgumentException("Instruction Evaluator has an invalid type");
         }
         
-        Type = type != null ? NamingHelper.GetObjectTypeHashcode(type) : 0;
+        Type = type?.GetHashCode() ?? 0;
         OpA = opA;
         OpB = opB;
         OpC = opC;

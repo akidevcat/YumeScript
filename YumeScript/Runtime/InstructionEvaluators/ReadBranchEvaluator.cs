@@ -1,6 +1,12 @@
-﻿namespace YumeScript.Runtime.InstructionEvaluators;
+﻿using YumeScript.External;
+using YumeScript.Script;
 
-public class ReadBranchEvaluator
+namespace YumeScript.Runtime.InstructionEvaluators;
+
+public class ReadBranchEvaluator : IInstructionEvaluator
 {
-    
+    public Task Evaluate(ScriptInstruction instruction)
+    {
+        throw new NotImplementedException();
+    }
 }
