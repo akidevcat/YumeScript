@@ -1,4 +1,5 @@
-﻿using YumeScript.Exceptions.Parser;
+﻿using YumeScript.Configuration;
+using YumeScript.Exceptions.Parser;
 using YumeScript.External;
 using YumeScript.Runtime.InstructionEvaluators;
 using YumeScript.Script;
@@ -29,10 +30,11 @@ public class ConditionInstructionParser : IInstructionParser
         if (tokens[0] == "$if")
         {
             // Add jump_if_false into next block / end
-            _lastJumpFalseInstruction = instructionId;
+            _lastJumpFalseInstruction = instructionId + 1;
             
-            var opA = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1)); // ToDo remove :
-            return ParserHelper.Result(new ScriptInstruction(typeof(JumpIfFalseEvaluator), opA)); 
+            var ptrCondition = _scriptTree.Allocate(string.Join(' ', tokens, 1, tokens.Length - 1)); // ToDo remove :
+            return ParserHelper.Result(new ScriptInstruction(typeof(CodeEvaluator), ptrCondition, Constants.RegistryAddressResult), 
+                new ScriptInstruction(typeof(JumpIfFalseEvaluator), Constants.RegistryAddressResult)); 
         }
 
         if (tokens[0] == "$elif")
@@ -68,9 +70,11 @@ public class ConditionInstructionParser : IInstructionParser
             var lastJumpFalse = _scriptTree[_lastJumpFalseInstruction]!.Value;
             lastJumpFalse.OpB = instructionId + 1;
             _scriptTree[_lastJumpFalseInstruction] = lastJumpFalse;
+            _lastJumpFalseInstruction = instructionId + 2;
             
-            _lastJumpFalseInstruction = instructionId;
-            return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator)), new ScriptInstruction(typeof(JumpIfFalseEvaluator), opA)); // jump, jump_if_false
+            return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator)), 
+                new ScriptInstruction(typeof(CodeEvaluator), opA, Constants.RegistryAddressResult), 
+                new ScriptInstruction(typeof(JumpIfFalseEvaluator), Constants.RegistryAddressResult)); // jump, jump_if_false
         }
         
         if (tokens.Length > 0 && tokens[0] == "$else:")
@@ -83,6 +87,7 @@ public class ConditionInstructionParser : IInstructionParser
             var lastJumpFalse = _scriptTree[_lastJumpFalseInstruction]!.Value;
             lastJumpFalse.OpB = instructionId + 1;
             _scriptTree[_lastJumpFalseInstruction] = lastJumpFalse;
+            _lastJumpFalseInstruction = -1;
             
             return ParserHelper.Keep(new ScriptInstruction(typeof(JumpEvaluator))); // jump
         }
@@ -93,7 +98,15 @@ public class ConditionInstructionParser : IInstructionParser
             temp.OpB = instructionId;
             _scriptTree[i] = temp;
         }
-        
+
+        if (_lastJumpFalseInstruction != -1)
+        {
+            var lastJumpFalse = _scriptTree[_lastJumpFalseInstruction]!.Value;
+            lastJumpFalse.OpB = instructionId;
+            _scriptTree[_lastJumpFalseInstruction] = lastJumpFalse;
+            _lastJumpFalseInstruction = -1;
+        }
+
         // If function end - do not additional pointer instruction
         if (tokens.Length == 0)
         {

@@ -2,13 +2,11 @@
 using YumeScript.Configuration;
 using YumeScript.Extensions;
 using YumeScript.External;
-using YumeScript.Script;
-using YumeScript.Tools;
 
 namespace YumeScript.Tests;
 
 [TestFixture]
-public class ExampleScriptTest
+public class ConditionStackingTest
 {
     [Test]
     public void Run()
@@ -23,7 +21,7 @@ public class ExampleScriptTest
         
         var runtime = runtimeCfg.CreateRuntime();
 
-        var script = new Script.Script("Example", File.ReadAllLines("../../../Resources/Example.yume"));
+        var script = new Script.Script("Tests.ConditionStackingTest", File.ReadAllLines("../../../Resources/ConditionStackingTest.yume"));
         runtime.AddScript(script);
         runtime.ParseScripts();
         

@@ -1,4 +1,5 @@
-﻿using YumeScript.External;
+﻿using System.Collections.Immutable;
+using YumeScript.External;
 using YumeScript.Runtime.InstructionEvaluators;
 using YumeScript.Script;
 using YumeScript.Tools;
@@ -44,8 +45,8 @@ public class PhraseInstructionParser : IInstructionParser
             return ParserHelper.Skip;
         }
 
-        var args = tokens.Where((x, i) => i != charTextTokenIndex);
-        var argsPtr = _scriptTree.Allocate(string.Join(" ", args)); //ToDo allocate array instead of string
+        var args = tokens.Where((x, i) => i != charTextTokenIndex).ToArray();
+        var argsPtr = _scriptTree.Allocate(args);
         
         return ParserHelper.Result(new ScriptInstruction(typeof(PrintPhraseEvaluator), charTextPtr.Value, argsPtr)); // PhrasePtr, ArgsPtr
     }

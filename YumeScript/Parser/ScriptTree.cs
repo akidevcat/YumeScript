@@ -1,4 +1,6 @@
 ﻿using System.Collections.Immutable;
+using System.Runtime.Serialization;
+using YumeScript.Configuration;
 using YumeScript.Exceptions.Parser;
 using YumeScript.External;
 using YumeScript.Runtime.InstructionEvaluators;
@@ -11,7 +13,7 @@ public class ScriptTree : IScriptTree
     private ScriptFunctionBuilder? _appendingFunction;
     private readonly List<ScriptFunction> _functions;
     private readonly HashSet<string> _functionNames;
-    private readonly Dictionary<int, IConvertible> _constants;
+    private readonly Dictionary<int, object> _constants;
     
     public ScriptInstruction? this[int lineId] // ToDo
     {
@@ -104,11 +106,6 @@ public class ScriptTree : IScriptTree
         _functions = new ();
         _functionNames = new();
         _constants = new();
-        
-        _constants.Add(int.MaxValue, "Registry Value A");
-        _constants.Add(int.MaxValue - 1, "Registry Value B");
-        _constants.Add(int.MaxValue - 2, "Registry Value C");
-        _constants.Add(int.MaxValue - 3, "Registry Value D");
     }
 
     internal bool AppendingFunction => _appendingFunction != null;
@@ -160,8 +157,13 @@ public class ScriptTree : IScriptTree
         _appendingFunction.AddRange(instructions);
     }
     
-    public int Allocate(IConvertible constant)
+    public int Allocate(object constant)
     {
+        if (!constant.GetType().IsSerializable)
+        {
+            throw new ArgumentException("Argument is not serializable", nameof(constant));
+        }
+        
         var hash = constant.GetHashCode();
         if (!_constants.ContainsKey(hash))
             _constants.Add(hash, constant);
@@ -174,7 +176,7 @@ public class ScriptTree : IScriptTree
         return _functions.ToImmutableDictionary(x => x.Name);
     }
     
-    internal ImmutableDictionary<int, IConvertible> BuildConstants()
+    internal ImmutableDictionary<int, object> BuildConstants()
     {
         return _constants.ToImmutableDictionary();
     }

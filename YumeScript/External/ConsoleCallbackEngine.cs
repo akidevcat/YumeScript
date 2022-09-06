@@ -1,6 +1,6 @@
 ﻿namespace YumeScript.External;
 
-public class DebugCallbackEngine : ICallbackEngine
+public class ConsoleCallbackEngine : ICallbackEngine
 {
     public Task<object?> CallStatement(string source)
     {

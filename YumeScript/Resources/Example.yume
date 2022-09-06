@@ -73,3 +73,5 @@ finale:
 		* "Yuu is not suitable for the main character role."
 	$else:
 		* "Yuu is suitable for the main character role."
+	$if false:
+		* "hello world"

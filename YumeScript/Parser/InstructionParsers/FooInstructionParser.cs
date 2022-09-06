@@ -12,6 +12,7 @@ public class FooInstructionParser : IInstructionParser
 
     public ParserResult ParseLineTokens(int instructionId, string[] tokens)
     {
+        return ParserHelper.Skip;
         return ParserHelper.Empty;
     }
 

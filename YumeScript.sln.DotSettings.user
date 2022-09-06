@@ -1,7 +1,14 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4eff4e27_002De2b5_002D4e6f_002Da784_002Da1efa2fe2dc6/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Run #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.ExampleScriptTest.Run&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.RuntimeParser_ParseTokens.Run&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=9199506c_002D26ad_002D49cf_002D9b0e_002Ddd77cac31750/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Run" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.ExampleScriptTest.Run&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.RuntimeParser_ParseTokens.Run&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.ConditionStackingTest.Run&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

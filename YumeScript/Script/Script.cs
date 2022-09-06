@@ -11,7 +11,7 @@ public class Script
     public readonly string FullName;
     internal readonly List<string>? SourceCode;
     internal ImmutableDictionary<string, ScriptFunction>? Functions;
-    internal ImmutableDictionary<int, IConvertible>? OpConstants;
+    internal ImmutableDictionary<int, object>? OpConstants;
 
     public bool IsParsed => Functions != null && OpConstants != null;
     

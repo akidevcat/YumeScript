@@ -1,0 +1,10 @@
+﻿test:
+	$if true:
+		$if false:
+			* "Test"
+		$elif false:
+			* "Test3"
+		$else:
+			* "Test2"
+	$else:
+		* "Test4"

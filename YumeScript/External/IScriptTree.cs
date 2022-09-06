@@ -28,7 +28,7 @@ public interface IScriptTree
     /// <summary>
     /// Appends a new constant to script file
     /// </summary>
-    /// <param name="constant"></param>
+    /// <param name="constant">Any serializable object</param>
     /// <returns>Constant's hash value for referencing</returns>
-    int Allocate(IConvertible constant);
+    int Allocate(object constant);
 }

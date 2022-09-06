@@ -52,7 +52,8 @@ internal static class ScriptParser
                         throw new NullReferenceException();
                     }
 
-                    var parserResult = parserStack.Peek().Item2.FinalizeIndentionSection(scriptTree.Length, tokens);
+                    // Pass tokens only if frame has the same indention level
+                    var parserResult = parserStack.Peek().Item2.FinalizeIndentionSection(scriptTree.Length, tabsCount == parserStack.Peek().Item1 ? tokens : Array.Empty<string>());
 
                     if (parserResult.Instructions == null)
                     {
