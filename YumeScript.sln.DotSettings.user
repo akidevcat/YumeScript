@@ -10,5 +10,6 @@
     &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.ExampleScriptTest.Run&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.RuntimeParser_ParseTokens.Run&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.ConditionStackingTest.Run&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::0661A834-5CFD-4DBA-AC2C-60FDEC8AEFFE::net6.0::YumeScript.Tests.BranchInstructionTest.Run&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

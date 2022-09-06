@@ -45,7 +45,7 @@ yuu_presentation:
             # Multiple arguments
 			yuu sad hide "But..."
 			
-			# Brancing with time limitation
+			# Branching with time limitation
 			? time=3.0:
 				"... Only ONE chance, understand?":
 					-> yuu_talk

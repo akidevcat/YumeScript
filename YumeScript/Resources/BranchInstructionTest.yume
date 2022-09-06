@@ -1,0 +1,7 @@
+﻿test:
+	? time=3.0:
+		"Choice A":
+			* "Test Msg1"
+			* "Test Msg2"
+		"Choice B":
+			* "Test Msg3"
