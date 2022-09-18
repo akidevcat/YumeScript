@@ -1,10 +1,10 @@
-# YumeScript
+# ****YumeScript****
 
-## Scripts
+**YumeScript** is a programming language built on .NET inspired by Ren’Py with the focus of writing narrative game scripts. The main feature of YumeScript is its modularity - the language can be easily updated with new instructions; execution implementation can be changed at the runtime.
 
-Scripts are contained with the ".yume" file extension name
+**Godot integration can be found here (ToDo).**
 
-Here's a straightforward script example introducing main features:
+## Code Example
 
 ```python
 # Define chapter (function)
@@ -83,3 +83,32 @@ finale:
 	$else:
 		* "Yuu is suitable for the main character role."
 ```
+
+**Documentation can be found here (ToDo).**
+
+## Architecture Overview
+
+```mermaid
+graph BT
+demo([YumeScript.Demo]);
+runtime(YumeScript.Runtime);
+interpreter(YumeScript.Interpreter);
+translator(YumeScript.Translator);
+sdk(YumeScript.SDK);
+
+demo --> runtime;
+runtime --> translator;
+translator --> sdk;
+runtime --> sdk;
+runtime --> interpreter;
+interpreter --> sdk;
+
+```
+
+## Get Started with Integration
+
+## How to Build / Requirements
+
+## License
+
+YumeScript is Copyright 2022 Aki Aoki under the MIT License.
